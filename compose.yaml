@@ -14,6 +14,7 @@ services:
   # supporting services - metrics, visualization and testing
   prometheus:
     image: prom/prometheus:latest
+    restart: always
     command:
       - --config.file=/etc/prometheus.yaml
       - --web.enable-remote-write-receiver
@@ -28,6 +29,7 @@ services:
 
   blackbox:
     image: quay.io/prometheus/blackbox-exporter:latest
+    restart: always
     ports:
       - "9115:9115"
     volumes:
@@ -37,6 +39,7 @@ services:
 
   grafana:
     image: grafana/grafana:13.1.0@sha256:121a7a9ece6dc10b969f1f96eed64b4f07dfac0d0b8abc070f7cb83bbde86f63
+    restart: always
     volumes:
       - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
