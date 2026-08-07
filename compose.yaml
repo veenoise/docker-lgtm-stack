@@ -22,7 +22,7 @@ services:
       - --enable-feature=native-histograms
 
     volumes:
-      - ./prometheus.yaml:/etc/prometheus.yaml
+      - ./prometheus-config/prometheus.yaml:/etc/prometheus
     ports:
       - "9090:9090"
 
