@@ -29,17 +29,6 @@ services:
     ports:
       - "9090:9090"
 
-  blackbox:
-    container_name: blackbox
-    image: quay.io/prometheus/blackbox-exporter:latest
-    restart: unless-stopped
-    ports:
-      - "9115:9115"
-    volumes:
-      - ./blackbox.yaml:/config/blackbox.yaml:ro
-    command:
-      - --config.file=/config/blackbox.yaml
-
   grafana:
     container_name: grafana
     image: grafana/grafana:13.1.0@sha256:121a7a9ece6dc10b969f1f96eed64b4f07dfac0d0b8abc070f7cb83bbde86f63
