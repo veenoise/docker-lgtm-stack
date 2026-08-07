@@ -19,3 +19,39 @@ otelcol.exporter.otlp "grafanacloud" {
 		}
   }
 }
+
+prometheus.exporter.blackbox "example" {
+  config = "{ modules: { http_2xx: { prober: http, timeout: 5s } } }"
+
+  target {
+    name    = "example"
+    address = "https://example.com"
+    module = "http_2xx"
+  }
+
+  target {
+    name    = "grafana"
+    address = "https://grafana.com"
+    module = "http_2xx"
+  }
+}
+
+discovery.relabel "example" {
+  targets = prometheus.exporter.blackbox.example.targets
+
+  rule {
+    source_labels = ["__param_target"]
+    target_label = "instance"
+  }
+}
+
+prometheus.scrape "example" {
+  targets = discovery.relabel.example.output
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}
+
+prometheus.remote_write "metrics_service" {
+  endpoint {
+    url = "http://host.docker.internal:9090/api/v1/write"
+  }
+}
