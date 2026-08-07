@@ -20,9 +20,9 @@ services:
       - --web.enable-lifecycle
       - --enable-feature=exemplar-storage
       - --enable-feature=native-histograms
-
     volumes:
       - ./prometheus-config/prometheus.yaml:/etc/prometheus
+      - prometheus-data:/prometheus
     ports:
       - "9090:9090"
 
@@ -42,3 +42,4 @@ services:
 
 volumes:
   tempo-data:
+  prometheus-data:
