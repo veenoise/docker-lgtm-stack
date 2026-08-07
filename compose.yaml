@@ -1,5 +1,6 @@
 services:
   tempo:
+    container_name: tempo
     image: "grafana/tempo:${TEMPO_IMAGE_TAG:-3.0.0}"
     command: "-target=all -config.file=/etc/tempo.yaml"
     restart: unless-stopped
@@ -13,6 +14,7 @@ services:
 
   # supporting services - metrics, visualization and testing
   prometheus:
+    container_name: prometheus
     image: prom/prometheus:latest
     restart: unless-stopped
     command:
@@ -28,6 +30,7 @@ services:
       - "9090:9090"
 
   blackbox:
+    container_name: blackbox
     image: quay.io/prometheus/blackbox-exporter:latest
     restart: unless-stopped
     ports:
@@ -38,6 +41,7 @@ services:
       - --config.file=/config/blackbox.yaml
 
   grafana:
+    container_name: grafana
     image: grafana/grafana:13.1.0@sha256:121a7a9ece6dc10b969f1f96eed64b4f07dfac0d0b8abc070f7cb83bbde86f63
     restart: unless-stopped
     volumes:
