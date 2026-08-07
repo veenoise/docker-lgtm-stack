@@ -20,7 +20,7 @@ otelcol.exporter.otlp "grafanacloud" {
   }
 }
 
-prometheus.exporter.blackbox "example" {
+prometheus.exporter.blackbox "prober" {
   config = "{ modules: { http_2xx: { prober: http, timeout: 5s } } }"
 
   target {
@@ -36,8 +36,8 @@ prometheus.exporter.blackbox "example" {
   }
 }
 
-discovery.relabel "example" {
-  targets = prometheus.exporter.blackbox.example.targets
+discovery.relabel "relabel_prober" {
+  targets = prometheus.exporter.blackbox.prober.targets
 
   rule {
     source_labels = ["__param_target"]
@@ -46,7 +46,7 @@ discovery.relabel "example" {
 }
 
 prometheus.scrape "example" {
-  targets = discovery.relabel.example.output
+  targets = discovery.relabel.relabel_prober.output
   forward_to = [prometheus.remote_write.metrics_service.receiver]
 }
 
