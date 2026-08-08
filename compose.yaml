@@ -29,6 +29,16 @@ services:
     ports:
       - "9090:9090"
 
+  loki:
+    container_name: loki
+    image: grafana/loki:3.4.2
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
+    command:
+      - -config.file=/etc/loki/local-config.yaml
+
   grafana:
     container_name: grafana
     image: grafana/grafana:13.1.0@sha256:121a7a9ece6dc10b969f1f96eed64b4f07dfac0d0b8abc070f7cb83bbde86f63
