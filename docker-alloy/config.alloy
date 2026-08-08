@@ -20,6 +20,28 @@ otelcol.exporter.otlp "grafanacloud" {
   }
 }
 
+local.file_match "local_files" {
+    path_targets = [{"__path__" = "/var/log/nginx/k8s-next-demo.access.log"}]
+    sync_period  = "5s"
+}
+
+loki.source.file "log_scrape" {
+  targets    = local.file_match.local_files.targets
+  forward_to = [loki.write.logs.receiver]
+  tail_from_end = false
+}
+
+loki.write "logs" {
+  endpoint {
+    url = "http://host.docker.internal:3100/loki/api/v1/push"
+
+    // basic_auth {
+    //  username = "admin"
+    //  password = "admin"
+    // }
+  }
+}
+
 prometheus.exporter.blackbox "prober" {
   config = "{ modules: { http_2xx: { prober: http, timeout: 5s } } }"
 
