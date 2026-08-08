@@ -45,7 +45,7 @@ discovery.relabel "relabel_prober" {
   }
 }
 
-prometheus.scrape "example" {
+prometheus.scrape "blackbox" {
   targets = discovery.relabel.relabel_prober.output
   forward_to = [prometheus.remote_write.metrics_service.receiver]
 }
