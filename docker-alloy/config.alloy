@@ -7,38 +7,60 @@ otelcol.receiver.otlp "otlp_receiver" {
   }
 
   output {
-    traces = [otelcol.exporter.otlp.grafanacloud.input,]
+    traces = [
+      otelcol.exporter.otlphttp.grafanacloud.input,
+      otelcol.exporter.otlp.grafanacloud.input,
+    ]
+  }
+}
+
+livedebugging {
+  enabled = true
+}
+
+otelcol.exporter.otlphttp "grafanacloud" {
+  client {
+    endpoint = sys.env("OTELHTTP_ENDPOINT")
+    auth = otelcol.auth.basic.otlphttp.handler
   }
 }
 
 otelcol.exporter.otlp "grafanacloud" {
   client {
-    endpoint = "host.docker.internal:4317"
-    tls {
-			insecure = true
-		}
+    endpoint = sys.env("OTEL_ENDPOINT")
+    auth = otelcol.auth.basic.otlp.handler
   }
 }
 
+otelcol.auth.basic "otlphttp" {
+  username = sys.env("OTELHTTP_USERNAME")
+  password = sys.env("OTELHTTP_PASSWORD")
+}
+
+otelcol.auth.basic "otlp" {
+  username = sys.env("OTEL_USERNAME")
+  password = sys.env("OTEL_PASSWORD")
+}
+
 local.file_match "local_files" {
-    path_targets = [{"__path__" = "/var/log/nginx/k8s-next-demo.access.log"}]
-    sync_period  = "5s"
+  path_targets = [{"__path__" = "/var/log/nginx/k8s-next-demo.access.log"}]
+  sync_period  = "5s"
 }
 
 loki.source.file "log_scrape" {
   targets    = local.file_match.local_files.targets
   forward_to = [loki.write.logs.receiver]
-  tail_from_end = false
+  tail_from_end = true
 }
 
 loki.write "logs" {
   endpoint {
-    url = "http://host.docker.internal:3100/loki/api/v1/push"
+    url = sys.env("LOKI_ENDPOINT")
 
-    // basic_auth {
-    //  username = "admin"
-    //  password = "admin"
-    // }
+    basic_auth {
+      username = sys.env("LOKI_USERNAME")
+      password = sys.env("LOKI_PASSWORD")
+    }
   }
 }
 
@@ -92,6 +114,33 @@ prometheus.relabel "filter_metrics" {
 
 prometheus.remote_write "metrics_service" {
   endpoint {
-    url = "http://host.docker.internal:9090/api/v1/write"
+    url = sys.env("PROMETHEUS_ENDPOINT")
+
+    basic_auth {
+      username = sys.env("PROMETHEUS_USERNAME")
+      password = sys.env("PROMETHEUS_PASSWORD")
+    }
   }
+}
+
+discovery.docker "local_containers" {
+ host = "unix:///var/run/docker.sock"
+}
+
+pyroscope.ebpf "instance" {
+ forward_to     = [pyroscope.write.endpoint.receiver]
+ targets = discovery.docker.local_containers.targets
+}
+
+pyroscope.write "endpoint" {
+  endpoint {
+    url = sys.env("PYROSCOPE_ENDPOINT")
+    basic_auth {
+      username = sys.env("PYROSCOPE_USERNAME")
+      password = sys.env("PYROSCOPE_PASSWORD")
+    }
+  }
+  external_labels = {
+    "instance" = env("HOSTNAME"),
+   }
 }
