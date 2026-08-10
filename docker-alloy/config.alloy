@@ -2,45 +2,45 @@ livedebugging {
   enabled = true
 }
 
-// otelcol.receiver.otlp "otlp_receiver" {
-//   grpc {
-//     endpoint = "0.0.0.0:4317"
-//   }
-//   http {
-//     endpoint = "0.0.0.0:4318"
-//   }
+otelcol.receiver.otlp "otlp_receiver" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
 
-//   output {
-//     traces = [
-//       otelcol.exporter.otlphttp.grafanacloud.input,
-//       otelcol.exporter.otlp.grafanacloud.input,
-//     ]
-//   }
-// }
+  output {
+    traces = [
+      otelcol.exporter.otlphttp.grafanacloud.input,
+      otelcol.exporter.otlp.grafanacloud.input,
+    ]
+  }
+}
 
-// otelcol.exporter.otlphttp "grafanacloud" {
-//   client {
-//     endpoint = sys.env("OTELHTTP_ENDPOINT")
-//     auth = otelcol.auth.basic.otlphttp.handler
-//   }
-// }
+otelcol.exporter.otlphttp "grafanacloud" {
+  client {
+    endpoint = sys.env("OTELHTTP_ENDPOINT")
+    auth = otelcol.auth.basic.otlphttp.handler
+  }
+}
 
-// otelcol.exporter.otlp "grafanacloud" {
-//   client {
-//     endpoint = sys.env("OTEL_ENDPOINT")
-//     auth = otelcol.auth.basic.otlp.handler
-//   }
-// }
+otelcol.exporter.otlp "grafanacloud" {
+  client {
+    endpoint = sys.env("OTEL_ENDPOINT")
+    auth = otelcol.auth.basic.otlp.handler
+  }
+}
 
-// otelcol.auth.basic "otlphttp" {
-//   username = sys.env("OTELHTTP_USERNAME")
-//   password = sys.env("OTELHTTP_PASSWORD")
-// }
+otelcol.auth.basic "otlphttp" {
+  username = sys.env("OTELHTTP_USERNAME")
+  password = sys.env("OTELHTTP_PASSWORD")
+}
 
-// otelcol.auth.basic "otlp" {
-//   username = sys.env("OTEL_USERNAME")
-//   password = sys.env("OTEL_PASSWORD")
-// }
+otelcol.auth.basic "otlp" {
+  username = sys.env("OTEL_USERNAME")
+  password = sys.env("OTEL_PASSWORD")
+}
 
 // local.file_match "local_files" {
 //   path_targets = [{"__path__" = "/var/log/nginx/k8s-next-demo.access.log"}]
@@ -53,16 +53,16 @@ livedebugging {
 //   tail_from_end = true
 // }
 
-// loki.write "logs" {
-//   endpoint {
-//     url = sys.env("LOKI_ENDPOINT")
+loki.write "logs" {
+  endpoint {
+    url = sys.env("LOKI_ENDPOINT")
 
-//     basic_auth {
-//       username = sys.env("LOKI_USERNAME")
-//       password = sys.env("LOKI_PASSWORD")
-//     }
-//   }
-// }
+    basic_auth {
+      username = sys.env("LOKI_USERNAME")
+      password = sys.env("LOKI_PASSWORD")
+    }
+  }
+}
 
 prometheus.exporter.blackbox "prober" {
   config = "{ modules: { http_2xx: { prober: http, timeout: 5s } } }"
@@ -94,23 +94,23 @@ prometheus.scrape "blackbox" {
   forward_to = [prometheus.remote_write.metrics_service.receiver]
 }
 
-// prometheus.exporter.unix "local_system" { }
+prometheus.exporter.unix "local_system" { }
 
-// prometheus.scrape "scrape_metrics" {
-//   targets         = prometheus.exporter.unix.local_system.targets
-//   forward_to      = [prometheus.relabel.filter_metrics.receiver]
-//   scrape_interval = "10s"
-// }
+prometheus.scrape "scrape_metrics" {
+  targets         = prometheus.exporter.unix.local_system.targets
+  forward_to      = [prometheus.relabel.filter_metrics.receiver]
+  scrape_interval = "10s"
+}
 
-// prometheus.relabel "filter_metrics" {
-//   rule {
-//     action        = "drop"
-//     source_labels = ["env"]
-//     regex         = "dev"
-//   }
+prometheus.relabel "filter_metrics" {
+  rule {
+    action        = "drop"
+    source_labels = ["env"]
+    regex         = "dev"
+  }
 
-//   forward_to = [prometheus.remote_write.metrics_service.receiver]
-// }
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}
 
 prometheus.remote_write "metrics_service" {
   endpoint {
