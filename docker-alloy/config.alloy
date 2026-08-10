@@ -123,24 +123,24 @@ prometheus.remote_write "metrics_service" {
   }
 }
 
-discovery.docker "local_containers" {
- host = "unix:///var/run/docker.sock"
-}
+// discovery.docker "local_containers" {
+//  host = "unix:///var/run/docker.sock"
+// }
 
-pyroscope.ebpf "instance" {
- forward_to     = [pyroscope.write.endpoint.receiver]
- targets = discovery.docker.local_containers.targets
-}
+// pyroscope.ebpf "instance" {
+//  forward_to     = [pyroscope.write.endpoint.receiver]
+//  targets = discovery.docker.local_containers.targets
+// }
 
-pyroscope.write "endpoint" {
-  endpoint {
-    url = sys.env("PYROSCOPE_ENDPOINT")
-    basic_auth {
-      username = sys.env("PYROSCOPE_USERNAME")
-      password = sys.env("PYROSCOPE_PASSWORD")
-    }
-  }
-  external_labels = {
-    "instance" = sys.env("HOSTNAME"),
-   }
-}
+// pyroscope.write "endpoint" {
+//   endpoint {
+//     url = sys.env("PYROSCOPE_ENDPOINT")
+//     basic_auth {
+//       username = sys.env("PYROSCOPE_USERNAME")
+//       password = sys.env("PYROSCOPE_PASSWORD")
+//     }
+//   }
+//   external_labels = {
+//     "instance" = sys.env("HOSTNAME"),
+//    }
+// }
