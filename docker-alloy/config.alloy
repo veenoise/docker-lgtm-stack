@@ -1,5 +1,5 @@
 livedebugging {
-  enabled = true
+  enabled = false
 }
 
 otelcol.receiver.otlp "otlp_receiver" {
