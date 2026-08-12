@@ -42,16 +42,16 @@ otelcol.auth.basic "otlp" {
   password = sys.env("OTEL_PASSWORD")
 }
 
-// local.file_match "local_files" {
-//   path_targets = [{"__path__" = "/var/log/nginx/k8s-next-demo.access.log"}]
-//   sync_period  = "5s"
-// }
+local.file_match "local_files" {
+  path_targets = [{"__path__" = "/var/log/nginx/*.log"}]
+  sync_period  = "5s"
+}
 
-// loki.source.file "log_scrape" {
-//   targets    = local.file_match.local_files.targets
-//   forward_to = [loki.write.logs.receiver]
-//   tail_from_end = true
-// }
+loki.source.file "log_scrape" {
+  targets    = local.file_match.local_files.targets
+  forward_to = [loki.write.logs.receiver]
+  tail_from_end = true
+}
 
 loki.write "logs" {
   endpoint {
