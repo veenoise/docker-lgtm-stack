@@ -24,7 +24,7 @@ services:
       - --enable-feature=exemplar-storage
       - --enable-feature=native-histograms
     volumes:
-      - ./prometheus.yaml:/etc/prometheus.yaml
+      - ./prometheus.yaml:/etc/prometheus.yaml:ro
       - prometheus-data:/prometheus
     ports:
       - "9090:9090"
