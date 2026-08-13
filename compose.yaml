@@ -34,7 +34,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/13.1.3-distroless@sha256:56e96f0107a0bb3b91cf4717248e4c4953652a11559bf20cb3f91e9a1e7f3e89
+    image: grafana/grafana:13.1.3-distroless@sha256:56e96f0107a0bb3b91cf4717248e4c4953652a11559bf20cb3f91e9a1e7f3e89
     restart: unless-stopped
     volumes:
       - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
