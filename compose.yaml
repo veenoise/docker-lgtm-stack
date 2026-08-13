@@ -1,7 +1,7 @@
 services:
   tempo:
     container_name: tempo
-    image: "grafana/tempo:${TEMPO_IMAGE_TAG:-3.0.0}"
+    image: grafana/tempo:3.0.2@sha256:cda87c212d8c584dc0b89e337e7ed648a5100feb657e5d528480ee4fa03dbbe3
     command: "-target=all -config.file=/etc/tempo.yaml"
     restart: unless-stopped
     volumes:
@@ -11,7 +11,7 @@ services:
   # supporting services - metrics, visualization and testing
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:latest
+    image: prom/prometheus:3.13.2-distroles@sha256:64f71bb84e03c855948418b0fc5dea53e9543d8e3fc9931598f583805507f05e
     restart: unless-stopped
     command:
       - --config.file=/etc/prometheus.yaml
@@ -25,7 +25,7 @@ services:
 
   loki:
     container_name: loki
-    image: grafana/loki:3.4.2
+    image: grafana/loki:3.7.6@sha256:efd47c67f9bac88ca29bcf8cb997d9ab29d1848bd0aff579282295542a745952
     volumes:
       - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
       - loki-data:/loki
