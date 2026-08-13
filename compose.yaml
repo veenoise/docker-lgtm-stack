@@ -28,6 +28,7 @@ services:
     image: grafana/loki:3.4.2
     volumes:
       - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
     command:
       - -config.file=/etc/loki/local-config.yaml
 
@@ -63,3 +64,4 @@ services:
 volumes:
   tempo-data:
   prometheus-data:
+  loki-data:
