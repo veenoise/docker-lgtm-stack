@@ -26,6 +26,7 @@ services:
   loki:
     container_name: loki
     image: grafana/loki:3.7.6@sha256:efd47c67f9bac88ca29bcf8cb997d9ab29d1848bd0aff579282295542a745952
+    restart: unless-stopped
     volumes:
       - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
       - loki-data:/loki
@@ -51,6 +52,7 @@ services:
   nginx:
     container_name: lgtm-nginx
     image: nginxinc/nginx-unprivileged:alpine@sha256:334d92979f15aaecd5dd50af5105e1230e2bb70765d45b1e2f964e7c5eda81c3
+    restart: unless-stopped
     volumes:
       - ./conf.d/:/etc/nginx/conf.d/:ro
       - ./htpasswd/:/etc/htpasswd/:ro
