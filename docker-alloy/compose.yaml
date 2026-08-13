@@ -8,7 +8,7 @@ services:
     volumes:
       - ./config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./k8s-next-demo.access.log:/var/log/nginx/k8s-next-demo.access.log:ro
+      - /var/log/nginx/:/var/log/nginx/:ro
     command:
       - run
       - /etc/alloy/config.alloy
