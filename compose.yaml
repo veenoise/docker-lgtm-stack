@@ -5,7 +5,7 @@ services:
     command: "-target=all -config.file=/etc/tempo.yaml"
     restart: unless-stopped
     volumes:
-      - ./tempo.yaml:/etc/tempo.yaml
+      - ./tempo.yaml:/etc/tempo.yaml:ro
       - tempo-data:/var/tempo
     ports:
       - "3200:3200" # tempo
