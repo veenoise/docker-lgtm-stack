@@ -13,7 +13,7 @@ datasources:
   editable: false
   jsonData:
     httpMethod: GET
-- name: Tempo (yes streaming)
+- name: Tempo
   type: tempo
   access: proxy
   orgId: 1
@@ -23,14 +23,11 @@ datasources:
   version: 1
   editable: false
   apiVersion: 1
-  uid: tempo-streaming-enabled
+  uid: tempo
   jsonData:
     httpMethod: GET
     serviceMap:
       datasourceUid: prometheus
-    streamingEnabled:
-      search: true
-      metrics: true
 - name: Loki
   type: loki
   access: proxy
