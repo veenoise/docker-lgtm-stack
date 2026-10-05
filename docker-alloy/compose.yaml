@@ -7,14 +7,20 @@ services:
     privileged: true
     restart: unless-stopped
     volumes:
-      - ./config.alloy:/etc/alloy/config.alloy:ro
+      # Uncomment this if you are not using GRAFANA_ALLOY_CONFIG_BASE64
+      # - ./config.alloy:/etc/alloy/config.alloy:ro
+
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/log/nginx/:/var/log/nginx/:ro
-    command:
-      - run
-      - /etc/alloy/config.alloy
-      - --storage.path=/var/lib/alloy/data
-      - --server.http.listen-addr=0.0.0.0:12345
+    entrypoint: |
+      sh -c '''
+        # Use GRAFANA_ALLOY_CONFIG_BASE64 env if it exists
+        if [ -n ${GRAFANA_ALLOY_CONFIG_BASE64} ]; then
+          echo ${GRAFANA_ALLOY_CONFIG_BASE64} | base64 -d > /etc/alloy/config.alloy
+        fi
+
+        alloy run /etc/alloy/config.alloy --storage.path=/var/lib/alloy/data --server.http.listen-addr=0.0.0.0:12345
+      '''
     env_file:
       - path: ./.env
         required: true
