@@ -1,3 +1,4 @@
 .env*.local
 .env
 *.htpasswd
+./docker-alloy/config.alloy

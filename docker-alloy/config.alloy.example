@@ -3,9 +3,9 @@ livedebugging {
 }
 
 otelcol.receiver.otlp "otlp_receiver" {
-  grpc {
-    endpoint = "0.0.0.0:4317"
-  }
+  // grpc {
+  //   endpoint = "0.0.0.0:4317"
+  // }
   http {
     endpoint = "0.0.0.0:4318"
   }
@@ -13,7 +13,7 @@ otelcol.receiver.otlp "otlp_receiver" {
   output {
     traces = [
       otelcol.exporter.otlphttp.grafanacloud.input,
-      otelcol.exporter.otlp.grafanacloud.input,
+      // otelcol.exporter.otlp.grafanacloud.input,
     ]
   }
 }
@@ -25,36 +25,36 @@ otelcol.exporter.otlphttp "grafanacloud" {
   }
 }
 
-otelcol.exporter.otlp "grafanacloud" {
-  client {
-    endpoint = sys.env("OTEL_ENDPOINT")
-    auth = otelcol.auth.basic.otlp.handler
-  }
-}
+// otelcol.exporter.otlp "grafanacloud" {
+//   client {
+//     endpoint = sys.env("OTEL_ENDPOINT")
+//     auth = otelcol.auth.basic.otlp.handler
+//   }
+// }
 
 otelcol.auth.basic "otlphttp" {
   username = sys.env("OTELHTTP_USERNAME")
   password = sys.env("OTELHTTP_PASSWORD")
 }
 
-otelcol.auth.basic "otlp" {
-  username = sys.env("OTEL_USERNAME")
-  password = sys.env("OTEL_PASSWORD")
-}
+// otelcol.auth.basic "otlp" {
+//   username = sys.env("OTEL_USERNAME")
+//   password = sys.env("OTEL_PASSWORD")
+// }
 
-local.file_match "local_files" {
-  path_targets = [
-    {"__path__" = "/var/log/nginx/*.access.log"},
-    {"__path__" = "/var/log/nginx/*.error.log"},
-  ]
-  sync_period  = "5s"
-}
+// local.file_match "local_files" {
+//   path_targets = [
+//     {"__path__" = "/var/log/nginx/*.access.log"},
+//     {"__path__" = "/var/log/nginx/*.error.log"},
+//   ]
+//   sync_period  = "5s"
+// }
 
-loki.source.file "log_scrape" {
-  targets    = local.file_match.local_files.targets
-  forward_to = [loki.write.logs.receiver]
-  tail_from_end = true
-}
+// loki.source.file "log_scrape" {
+//   targets    = local.file_match.local_files.targets
+//   forward_to = [loki.write.logs.receiver]
+//   tail_from_end = true
+// }
 
 loki.write "logs" {
   endpoint {
@@ -67,35 +67,35 @@ loki.write "logs" {
   }
 }
 
-prometheus.exporter.blackbox "prober" {
-  config = "{ modules: { http_2xx: { prober: http, timeout: 5s, http: { preferred_ip_protocol: ip4, ip_protocol_fallback: false } } } }"
+// prometheus.exporter.blackbox "prober" {
+//   config = "{ modules: { http_2xx: { prober: http, timeout: 5s, http: { preferred_ip_protocol: ip4, ip_protocol_fallback: false } } } }"
 
-  target {
-    name    = "example"
-    address = "https://example.com"
-    module = "http_2xx"
-  }
+//   target {
+//     name    = "example"
+//     address = "https://example.com"
+//     module = "http_2xx"
+//   }
 
-  target {
-    name    = "grafana"
-    address = "https://grafana.com"
-    module = "http_2xx"
-  }
-}
+//   target {
+//     name    = "grafana"
+//     address = "https://grafana.com"
+//     module = "http_2xx"
+//   }
+// }
 
-discovery.relabel "relabel_prober" {
-  targets = prometheus.exporter.blackbox.prober.targets
+// discovery.relabel "relabel_prober" {
+//   targets = prometheus.exporter.blackbox.prober.targets
 
-  rule {
-    source_labels = ["__param_target"]
-    target_label = "instance"
-  }
-}
+//   rule {
+//     source_labels = ["__param_target"]
+//     target_label = "instance"
+//   }
+// }
 
-prometheus.scrape "blackbox" {
-  targets = discovery.relabel.relabel_prober.output
-  forward_to = [prometheus.remote_write.metrics_service.receiver]
-}
+// prometheus.scrape "blackbox" {
+//   targets = discovery.relabel.relabel_prober.output
+//   forward_to = [prometheus.remote_write.metrics_service.receiver]
+// }
 
 prometheus.exporter.unix "local_system" { }
 
